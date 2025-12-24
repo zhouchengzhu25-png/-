@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grand Luxury Tree</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              cinzel: ['Cinzel', 'serif'],
+              playfair: ['Playfair Display', 'serif'],
+            },
+            colors: {
+              gold: {
+                100: '#ffe4e6', // Light Pink
+                200: '#fbcfe8', // Rose Pink
+                300: '#ff69b4', // Hot Pink
+                900: '#831843', // Deep Maroon
+              },
+              deepGreen: '#2e0212', // Dark Burgundy/Purple
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Custom scrollbar hide for cleaner UI */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "three": "https://esm.sh/three@^0.182.0",
+    "three/": "https://esm.sh/three@^0.182.0/",
+    "@mediapipe/tasks-vision": "https://esm.sh/@mediapipe/tasks-vision@^0.10.22-rc.20250304",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "lil-gui": "https://esm.sh/lil-gui@^0.21.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-black overflow-hidden text-gold-100 antialiased select-none">
+    <div id="root"></div>
+  </body>
+</html>

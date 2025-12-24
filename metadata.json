@@ -1,0 +1,7 @@
+{
+  "name": "Copy of 小美的圣诞树",
+  "description": "An interactive 3D luxury Christmas tree experience controlled by hand gestures, featuring particle effects, bloom post-processing, and spatial audio.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
