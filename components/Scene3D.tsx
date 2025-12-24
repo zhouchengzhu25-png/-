@@ -60,6 +60,7 @@ export const Scene3D = forwardRef<SceneRef, Scene3DProps>(({ onLoadStart, onLoad
     handLandmarker: HandLandmarker | null;
     gui: GUI;
     requestID: number;
+    nextPhotoSlot: number; // Cursor for cycling through frames
     state: {
         mode: 'TREE' | 'SCATTER' | 'FOCUS';
         focusTarget: THREE.Object3D | null;
@@ -74,18 +75,54 @@ export const Scene3D = forwardRef<SceneRef, Scene3DProps>(({ onLoadStart, onLoad
   useImperativeHandle(ref, () => ({
     addPhotos: (files: FileList) => {
       if (!inst.current) return;
-      if (inst.current.photoMeshGroup.children.length > 50) {
-        alert("Memory limit reached for photos.");
-        return;
+      
+      const { particles } = inst.current;
+      const photoParticles = particles.filter(p => p.type === 'PHOTO');
+      
+      if (photoParticles.length === 0) {
+          // Fallback if no frames exist (shouldn't happen with default images)
+          alert("No frames available to place photos.");
+          return;
       }
+
       Array.from(files).forEach((f) => {
         const reader = new FileReader();
         reader.onload = (ev) => {
-          if(ev.target?.result) {
+          if(ev.target?.result && inst.current) {
             new THREE.TextureLoader().load(ev.target.result as string, (t) => {
               t.colorSpace = THREE.SRGBColorSpace;
-              // Ensure we check image dimensions for aspect ratio
-              addPhotoToScene(t);
+              
+              // Find the next slot to replace
+              const slot = inst.current.nextPhotoSlot % photoParticles.length;
+              const particle = photoParticles[slot];
+              inst.current.nextPhotoSlot++; // Increment cursor
+              
+              // Apply Crop Logic (Duplicate of addPhotoToScene logic)
+              const img = t.image as HTMLImageElement;
+              if (img && img.width && img.height) {
+                  const imageAspect = img.width / img.height;
+                  const targetAspect = 1.0;
+                  
+                  t.wrapS = THREE.ClampToEdgeWrapping;
+                  t.wrapT = THREE.ClampToEdgeWrapping;
+                  
+                  if (imageAspect > targetAspect) {
+                      t.repeat.x = targetAspect / imageAspect;
+                      t.offset.x = (1 - t.repeat.x) / 2;
+                  } else {
+                      t.repeat.y = imageAspect / targetAspect;
+                      t.offset.y = (1 - t.repeat.y) / 2;
+                  }
+              }
+
+              // Update Mesh Material
+              const group = particle.mesh as THREE.Group;
+              // Children: [0]=Frame, [1]=Photo, [2]=Back
+              if (group.children[1]) {
+                  const photoMesh = group.children[1] as THREE.Mesh;
+                  (photoMesh.material as THREE.MeshBasicMaterial).map = t;
+                  (photoMesh.material as THREE.MeshBasicMaterial).needsUpdate = true;
+              }
             });
           }
         };
@@ -386,6 +423,7 @@ export const Scene3D = forwardRef<SceneRef, Scene3DProps>(({ onLoadStart, onLoad
         scene, camera, renderer, composer, bloomPass, mainGroup, snowGroup, photoMeshGroup, cursor, particles, clock, sound, audioLoader, gui,
         requestID: 0,
         handLandmarker: null,
+        nextPhotoSlot: 0,
         state: {
             mode: 'TREE',
             focusTarget: null,
